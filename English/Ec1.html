@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>12th English – John Donne Quiz (English + Hindi)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter','Noto Sans Devanagari', sans-serif; touch-action: manipulation; }
+    .option-btn.correct { background-color:#22c55e !important; color:#fff !important; border-color:#16a34a !important; }
+    .option-btn.incorrect { background-color:#ef4444 !important; color:#fff !important; border-color:#dc2626 !important; }
+    .hide { display:none; }
+  </style>
+</head>
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-800 dark:text-gray-200 flex items-center justify-center min-h-screen p-4">
+
+  <div id="quiz-container" class="w-full max-w-3xl bg-white dark:bg-gray-800 rounded-2xl shadow-2xl p-6 md:p-8 transition-all duration-300">
+    <!-- Header -->
+    <div id="quiz-header" class="mb-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-4">
+        <h2 class="text-2xl md:text-3xl font-bold text-indigo-600 dark:text-indigo-400">John Donne – Objective Quiz</h2>
+        <div class="flex items-center gap-2">
+          <div id="timer-display" class="text-lg font-semibold bg-amber-100 dark:bg-amber-900 text-amber-700 dark:text-amber-200 px-4 py-2 rounded-lg">⏱️ 15s</div>
+          <div id="score-display" class="text-lg font-semibold bg-indigo-100 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-lg">स्कोर: 0</div>
+        </div>
+      </div>
+      <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+        <div id="progress-bar" class="bg-indigo-500 h-2.5 rounded-full" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div id="question-area">
+      <p id="question-text" class="text-xl md:text-2xl font-semibold mb-2 min-h-[40px]"></p>
+      <p id="question-text-hi" class="text-base md:text-lg text-gray-600 dark:text-gray-300 mb-6 min-h-[30px]"></p>
+      <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+
+    <!-- Feedback -->
+    <div id="feedback-area" class="mt-6 text-center text-lg font-medium min-h-[30px]"></div>
+
+    <!-- Controls -->
+    <div class="mt-8 flex justify-end">
+      <button id="next-btn" class="hide bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">अगला प्रश्न</button>
+    </div>
+
+    <!-- Results -->
+    <div id="result-container" class="hide text-center">
+      <h2 class="text-3xl font-bold mb-4">क्विज समाप्त!</h2>
+      <p id="result-text" class="text-2xl mb-6">आपका अंतिम स्कोर है ...</p>
+      <button id="restart-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">फिर से शुरू करें</button>
+    </div>
+
+    <!-- Footer Branding -->
+    <div class="mt-10 pt-6 border-t border-gray-200 dark:border-gray-700 text-center text-sm text-gray-600 dark:text-gray-300">
+      <div class="font-semibold">© Created by Dhiraj Kumar</div>
+      <div>Student Of High School Khapur (63050)</div>
+      <div>Class 12th</div>
+    </div>
+  </div>
+
+  <script>
+    // Helper: round to nearest 0.5
+    function roundToHalf(x) {
+      return Math.round(x * 2) / 2;
+    }
+
+    // =====================
+    // Data (English + Hindi)
+    // =====================
+    const quizData = [
+      // ---- First set: "MULTIPLE_CHOICE QUESTIONS TRY & GET ANS" (1-10) ----
+      {en:"Who is called a metaphysical poet?", hi:"किसे अध्यात्मिक कवि कहा जाता है?", options:["William Wordsworth","John Donne","William Shakespeare","Geoffrey Chaucer"], answer:"John Donne"},
+      {en:"Where was John Donne born?", hi:"जॉन डन का जन्म कहाँ हुआ था?", options:["Paris","Rome","London","Oxford"], answer:"London"},
+      {en:"Why did John Donne leave Oxford University without a degree?", hi:"जॉन डन को ऑक्सफोर्ड विश्वविद्यालय बिना डिग्री के क्यों छोड़ना पड़ा?", options:["He failed his exams","He had financial problems","He was Catholic","He wanted to travel"], answer:"He was Catholic"},
+      {en:"What type of poetry is John Donne famous for?", hi:"जॉन डन किस प्रकार की कविता के लिए प्रसिद्ध हैं?", options:["Romantic poetry","Metaphysical poetry","Epic poetry","Nature poetry"], answer:"Metaphysical poetry"},
+      {en:"What was John Donne’s religion at birth?", hi:"जॉन डन का जन्म किस धर्म में हुआ था?", options:["Protestant","Roman Catholic","Anglican","Lutheran"], answer:"Roman Catholic"},
+      {en:"Why was John Donne sent to prison?", hi:"जॉन डन को जेल क्यों भेजा गया था?", options:["For writing against the king","For secretly marrying his patron's niece","For refusing to become a priest","For stealing money"], answer:"For secretly marrying his patron's niece"},
+      {en:"At what age did John Donne become a priest in the Anglican Church?", hi:"जॉन डन कितनी उम्र में एंग्लिकन चर्च में पादरी बने?", options:["30 years","35 years","42 years","50 years"], answer:"42 years"},
+      {en:"John Donne studied law and read ___", hi:"जॉन डन ने क़ानून की पढ़ाई की और ___ पढ़ा।", options:["Science","Mathematics","Theology","Medicine"], answer:"Theology"},
+      {en:"Which of the following is John Donne’s famous work?", hi:"निम्नलिखित में से कौन जॉन डन की प्रसिद्ध रचना है?", options:["Hamlet","Paradise Lost","Songs and Sonnets","Lyrical Ballads"], answer:"Songs and Sonnets"},
+      {en:"What is the main theme of Donne’s poetry?", hi:"डन की कविता का मुख्य विषय क्या है?", options:["Love and religion","War and politics","Nature and peace","Adventure and mythology"], answer:"Love and religion"},
+
+      // ---- Second set: "OBJECTIVE QUESTIONS" (1-35) ----
+      {en:"Who will make a quicker journey than the sun?", hi:"सूर्य से भी तेज़ यात्रा कौन करेगा?", options:["John Donne","Walt Whitman","W.H. Auden","John Keats"], answer:"John Donne"},
+      {en:"\"O how feeble is man's power\" is taken from:", hi:"\"ओ, मनुष्य की शक्ति कितनी दुर्बल है\" यह किससे लिया गया है?", options:["Sweetest Love, I Do Not Goe","Ode to Autumn","An Epitaph","The Soldier"], answer:"Sweetest Love, I Do Not Goe"},
+      {en:"\"That thou lov’st mee, as thou say’st,\" is from:", hi:"\"कि तुम मुझसे प्रेम करते हो, जैसा कि तुम कहते हो,\" यह किससे लिया गया है?", options:["Snake","The Soldier","Song of Myself","Sweetest Love I Do Not Goe"], answer:"Sweetest Love I Do Not Goe"},
+      {en:"John Donne was the pioneer of:", hi:"जॉन डन किसके अग्रदूत थे?", options:["Elizabethan poetry","Metaphysical poetry","Restoration poetry","Neo-classical poetry"], answer:"Metaphysical poetry"},
+      {en:"John Donne has written the poem:", hi:"जॉन डन ने कौन सी कविता लिखी है?", options:["Song of Myself","An Epitaph","Sweetest Love I Do Not Goe","The Soldier"], answer:"Sweetest Love I Do Not Goe"},
+      {en:"The poet in Sweetest Love, I Do Not Goe is .............. his beloved.", hi:"Sweetest Love, I Do Not Goe कविता में कवि अपनी प्रियतमा से .............. रहा है।", options:["tired of","angry with","sad for","happy for"], answer:"sad for"},
+      {en:"John Donne is going to leave his wife behind in:", hi:"जॉन डन अपनी पत्नी को कहाँ छोड़कर जाने वाले हैं?", options:["France","Germany","Italy","England"], answer:"Germany"},
+      {en:"John Donne thinks that ........ is certain.", hi:"जॉन डन सोचते हैं कि ........ निश्चित है।", options:["death","work","life","None of these"], answer:"death"},
+      {en:"John Donne wants to go away because he is not tired of his:", hi:"जॉन डन दूर जाना चाहता है क्योंकि वह अपने ........ से नहीं थका है।", options:["mother","father","beloved","sister"], answer:"beloved"},
+      {en:"John Donne feels that a ........ is very hopeless.", hi:"जॉन डन को लगता है कि एक ........ बहुत निराशाजनक होता है।", options:["animal","goat","bird","man"], answer:"man"},
+      {en:"........ has been described as a metaphysical poet.", hi:"........ को एक भाववादी (metaphysical) कवि के रूप में वर्णित किया गया है।", options:["John Keats","Walt Whitman","John Donne","T.S. Eliot"], answer:"John Donne"},
+      {en:"........ wants to gladly accept death.", hi:"........ खुशी-खुशी मृत्यु को स्वीकार करना चाहता है।", options:["Walt Whitman","John Keats","John Donne","T.S. Eliot"], answer:"John Donne"},
+      {en:"John Donne had seen the sun setting:", hi:"जॉन डन ने सूर्य को कहाँ डूबते देखा था?", options:["today","yesterday","tomorrow","None of these"], answer:"yesterday"},
+      {en:"The line 'Nor in the hope, the world can show A fitter love for me;' is from:", hi:"पंक्ति 'Nor in the hope, the world can show A fitter love for me;' किससे ली गई है?", options:["Fire Hymn","To Autumn","Snake","Sweetest Love I Do Not Goe"], answer:"Sweetest Love I Do Not Goe"},
+      {en:"John Donne is a ........ poet.", hi:"जॉन डन एक ........ कवि हैं।", options:["nature","metaphysical","cavalier","romantic"], answer:"metaphysical"},
+      {en:"Donne studied law and read:", hi:"डन ने क़ानून की पढ़ाई की और ........ पढ़ा।", options:["theology","drama","philosophy","novels"], answer:"theology"},
+      {en:"'But believe that I shall make speedier journeys,' is taken from:", hi:"'But believe that I shall make speedier journeys,' किससे लिया गया है?", options:["To Autumn","Fire Hymn","Macavity: The Mystery Cat","Sweetest Love I Do Not Goe"], answer:"Sweetest Love I Do Not Goe"},
+      {en:"Donne compares his journey of life to that of the:", hi:"डन अपनी जीवन यात्रा की तुलना किससे करते हैं?", options:["stars","sun","planets","moon"], answer:"sun"},
+      {en:"John Donne was the pioneer of a new kind of lyrical and ........ verse.", hi:"जॉन डन एक नए प्रकार की गीतात्मक और ........ कविता के अग्रदूत थे।", options:["satirical","metrical","verbal","mechanical"], answer:"satirical"},
+      {en:"Where was John Donne born?", hi:"जॉन डन का जन्म कहाँ हुआ था?", options:["Paris","Rome","London","Oxford"], answer:"London"},
+      {en:"Why did John Donne leave Oxford University without a degree?", hi:"जॉन डन को ऑक्सफोर्ड विश्वविद्यालय बिना डिग्री के क्यों छोड़ना पड़ा?", options:["He failed his exams","He had financial problems","He was Catholic","He wanted to travel"], answer:"He was Catholic"},
+      {en:"What type of poetry is John Donne famous for?", hi:"जॉन डन किस प्रकार की कविता के लिए प्रसिद्ध हैं?", options:["Romantic poetry","Metaphysical poetry","Epic poetry","Nature poetry"], answer:"Metaphysical poetry"},
+      {en:"What was John Donne’s religion at birth?", hi:"जॉन डन का जन्म किस धर्म में हुआ था?", options:["Protestant","Roman Catholic","Anglican","Lutheran"], answer:"Roman Catholic"},
+      {en:"Why was John Donne sent to prison?", hi:"जॉन डन को जेल क्यों भेजा गया था?", options:["For writing against the king","For secretly marrying his patron's niece","For refusing to become a priest","For stealing money"], answer:"For secretly marrying his patron's niece"},
+      {en:"At what age did John Donne become a priest in the Anglican Church?", hi:"जॉन डन कितनी उम्र में एंग्लिकन चर्च में पादरी बने?", options:["30 years","35 years","42 years","50 years"], answer:"42 years"},
+      {en:"Who was forced to leave Oxford University without a degree?", hi:"बिना डिग्री के ऑक्सफोर्ड यूनिवर्सिटी छोड़ने के लिए किसे मजबूर किया गया?", options:["Walt Whitman","W.H. Auden","John Donne","None of these"], answer:"John Donne"},
+      {en:"Who is well known for his Songs and Sonnets, Satires and the Elegies and Sermons?", hi:"अपने गीतों और सॉनेट्स, व्यंग्य, एलेजीज़ और उपदेशों के लिए कौन जाना जाता है?", options:["John Donne","W.H. Auden","Walt Whitman","None of these"], answer:"John Donne"},
+      {en:"According to Donne, man's power is ………", hi:"डन के अनुसार, मनुष्य की शक्ति ........ है", options:["feeble","strong","active","smooth"], answer:"feeble"},
+      {en:"They who keep one another alive can never…….", hi:"जो एक दूसरे को जीवित रखते हैं, वे कभी नहीं…….", options:["die","be parted","sleep","be ill"], answer:"be parted"},
+      {en:"'That if good fortune fall, Cannot adde another houre' - is from:", hi:"'That if good fortune fall, Cannot adde another houre' - किससे है:", options:["An Epitaph","The Soldier","Song of Myself","Sweetest Love I Do Not Goe"], answer:"Sweetest Love I Do Not Goe"},
+      {en:"'Destiny may take thy apart, And may thy fears fulfil' - is said by:", hi:"'Destiny may take thy apart, And may thy fears fulfil' - किसके द्वारा कहा गया है:", options:["the speaker","the speaker's wife","the speaker's mistress","the speaker's mother"], answer:"the speaker"},
+      {en:"Whose sighs are like wind?", hi:"किसकी आहें हवा की तरह हैं?", options:["W. H. Auden","John Donne","Walt Whitman","John Donne’s Beloved"], answer:"John Donne’s Beloved"},
+      {en:"Whose tears are like rain?", hi:"किसके आँसू बारिश की तरह हैं?", options:["his wife's","her husband","his sister","None of these"], answer:"his wife's"},
+      {en:"Sweetest Love, I Do Not Goe is written by ........", hi:"Sweetest Love, I Do Not Goe ........ द्वारा लिखी गई है।", options:["John Donne","Kamala Das","D. H. Lawrence","Walt Whitman"], answer:"John Donne"},
+      {en:"John Donne is a ........ poet.", hi:"जॉन डन एक ........ कवि हैं।", options:["British","German","American","Indian"], answer:"British"}
+    ];
+
+    // =====================
+    // Quiz Logic
+    // =====================
+    let currentQuestionIndex = 0;
+    let score = 0; // raw score with negatives
+    let timer = null;
+    const TIME_PER_QUESTION = 15;
+
+    const questionText = document.getElementById('question-text');
+    const questionTextHi = document.getElementById('question-text-hi');
+    const optionsContainer = document.getElementById('options-container');
+    const nextBtn = document.getElementById('next-btn');
+    const feedbackArea = document.getElementById('feedback-area');
+    const resultContainer = document.getElementById('result-container');
+    const quizArea = document.getElementById('question-area');
+    const quizHeader = document.getElementById('quiz-header');
+    const resultText = document.getElementById('result-text');
+    const restartBtn = document.getElementById('restart-btn');
+    const scoreDisplay = document.getElementById('score-display');
+    const progressBar = document.getElementById('progress-bar');
+    const timerDisplay = document.getElementById('timer-display');
+
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      resultContainer.classList.add('hide');
+      quizArea.classList.remove('hide');
+      quizHeader.classList.remove('hide');
+      nextBtn.classList.add('hide');
+      feedbackArea.textContent = '';
+      updateScoreDisplay();
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      resetState();
+      const q = quizData[currentQuestionIndex];
+      questionText.textContent = `${currentQuestionIndex + 1}. ${q.en}`;
+      questionTextHi.textContent = q.hi ? `(${q.hi})` : '';
+
+      const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+      shuffledOptions.forEach(option => {
+        const button = document.createElement('button');
+        button.textContent = option;
+        button.classList.add('option-btn','w-full','p-4','rounded-lg','border-2','border-gray-300','dark:border-gray-600','text-left','hover:bg-indigo-100','dark:hover:bg-gray-700','transition-colors','duration-200');
+        button.addEventListener('click', selectAnswer);
+        optionsContainer.appendChild(button);
+      });
+
+      updateProgressBar();
+      startTimer();
+    }
+
+    function resetState() {
+      nextBtn.classList.add('hide');
+      feedbackArea.textContent = '';
+      while (optionsContainer.firstChild) optionsContainer.removeChild(optionsContainer.firstChild);
+      stopTimer();
+      timerDisplay.textContent = `⏱️ ${TIME_PER_QUESTION}s`;
+      timerDisplay.classList.remove('bg-red-100','text-red-700','dark:bg-red-900','dark:text-red-200');
+    }
+
+    function selectAnswer(e) {
+      const selectedBtn = e.target;
+      const isCorrect = selectedBtn.textContent === quizData[currentQuestionIndex].answer;
+
+      stopTimer();
+
+      if (isCorrect) {
+        score += 1;
+        feedbackArea.textContent = 'सही जवाब! (+1)';
+        feedbackArea.classList.remove('text-red-500');
+        feedbackArea.classList.add('text-green-500');
+        selectedBtn.classList.add('correct');
+      } else {
+        score -= (1/3);
+        feedbackArea.textContent = `गलत! सही जवाब है: ${quizData[currentQuestionIndex].answer} (-0.33)`;
+        feedbackArea.classList.remove('text-green-500');
+        feedbackArea.classList.add('text-red-500');
+        selectedBtn.classList.add('incorrect');
+      }
+
+      Array.from(optionsContainer.children).forEach(button => {
+        if (button.textContent === quizData[currentQuestionIndex].answer) button.classList.add('correct');
+        button.disabled = true;
+      });
+
+      updateScoreDisplay();
+      nextBtn.classList.remove('hide');
+    }
+
+    function timeUpAutoSelectWrong() {
+      // If time is up and user hasn't answered, count as wrong and reveal answer.
+      score -= (1/3);
+      feedbackArea.textContent = `समय समाप्त! सही जवाब: ${quizData[currentQuestionIndex].answer} (-0.33)`;
+      feedbackArea.classList.remove('text-green-500');
+      feedbackArea.classList.add('text-red-500');
+
+      Array.from(optionsContainer.children).forEach(button => {
+        if (button.textContent === quizData[currentQuestionIndex].answer) button.classList.add('correct');
+        else button.classList.add('incorrect');
+        button.disabled = true;
+      });
+
+      updateScoreDisplay();
+      nextBtn.classList.remove('hide');
+    }
+
+    function showResults() {
+      quizArea.classList.add('hide');
+      quizHeader.classList.add('hide');
+      nextBtn.classList.add('hide');
+      feedbackArea.textContent = '';
+      resultContainer.classList.remove('hide');
+
+      const rounded = roundToHalf(score);
+      resultText.textContent = `आपका अंतिम स्कोर है ${rounded} / ${quizData.length}`;
+    }
+
+    function handleNextButton() {
+      currentQuestionIndex++;
+      if (currentQuestionIndex < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function updateProgressBar() {
+      const progressPercentage = (currentQuestionIndex / quizData.length) * 100;
+      progressBar.style.width = `${progressPercentage}%`;
+    }
+
+    function updateScoreDisplay() {
+      const rounded = roundToHalf(score);
+      scoreDisplay.textContent = `स्कोर: ${rounded}`;
+    }
+
+    function startTimer() {
+      let t = TIME_PER_QUESTION;
+      timerDisplay.textContent = `⏱️ ${t}s`;
+      timer = setInterval(() => {
+        t -= 1;
+        timerDisplay.textContent = `⏱️ ${t}s`;
+        if (t <= 5) {
+          timerDisplay.classList.add('bg-red-100','text-red-700','dark:bg-red-900','dark:text-red-200');
+        }
+        if (t <= 0) {
+          clearInterval(timer);
+          timeUpAutoSelectWrong();
+        }
+      }, 1000);
+    }
+
+    function stopTimer() {
+      if (timer) clearInterval(timer);
+      timer = null;
+    }
+
+    document.getElementById('next-btn').addEventListener('click', handleNextButton);
+    document.getElementById('restart-btn').addEventListener('click', startQuiz);
+
+    // Initial
+    startQuiz();
+  </script>
+</body>
+</html>
