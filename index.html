@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class 12th Objective Quiz</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 50px; }
+    select, button { padding: 10px; margin: 10px; font-size: 16px; }
+  </style>
+</head>
+<body>
+  <h1>Class 12th Objective Questions</h1>
+
+  <label for="book">Select Book:</label>
+  <select id="book" onchange="loadChapters()">
+    <option value="">--Choose--</option>
+    <option value="English">English</option>
+    <option value="Hindi">Hindi</option>
+  </select>
+
+  <br>
+
+  <label for="chapter">Select Chapter:</label>
+  <select id="chapter">
+    <option value="">--Select Book First--</option>
+  </select>
+
+  <br><br>
+  <button onclick="openChapter()">Open Chapter</button>
+
+  <script>
+    // List of chapters available per book
+    const chapters = {
+      English: ["Ec1.html"],   // You can add Ec2.html, Ec3.html later
+      Hindi: ["Hc1.html"]      // Add Hc2.html, etc. later
+    };
+
+    function loadChapters() {
+      const book = document.getElementById("book").value;
+      const chapterSelect = document.getElementById("chapter");
+      chapterSelect.innerHTML = "";
+
+      if (book && chapters[book]) {
+        chapters[book].forEach(chap => {
+          let opt = document.createElement("option");
+          opt.value = chap;
+          opt.text = chap.replace(".html", ""); // Show Ec1, Hc1
+          chapterSelect.appendChild(opt);
+        });
+      } else {
+        let opt = document.createElement("option");
+        opt.text = "--Select Book First--";
+        chapterSelect.appendChild(opt);
+      }
+    }
+
+    function openChapter() {
+      const book = document.getElementById("book").value;
+      const chapter = document.getElementById("chapter").value;
+      if (book && chapter) {
+        window.location.href = `${book}/${chapter}`;
+      } else {
+        alert("Please select both book and chapter!");
+      }
+    }
+  </script>
+</body>
+</html>
